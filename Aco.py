@@ -68,7 +68,7 @@ class AntColony(object):
 
         all_paths = []
 
-        while (self.hojasCultivo > 700):
+        while (self.hojasCultivo > 850):
             for i in range(self.n_iterations):
                 all_paths = self.gen_all_paths()
                 self.vertices = self.objFeromona.evaporacionGlobalFeromona(self.nodos, self.vertices)
@@ -80,14 +80,6 @@ class AntColony(object):
             print('**************NODOS EN EL CULTIVO************')
             #self.objCultivo.getCultivoClasificado()
             self.controlCultivo(self.vertices)
-            #print('Cultivo')
-            #self.objCultivo.iterar()
-            #print('Base 1:', self.contadorB1)
-            #print('Base 2:', self.contadorB2)
-            #print('Base 3:', self.contadorB3)
-            #self.contadorB1 = 0
-            #self.contadorB2 = 0
-            #self.contadorB3 = 0
 
         cultivoCosechar = self.objCultivo.getCultivoClasificado()
         objCultivoNotificador =  CultivoNotificador(cultivoCosechar)
@@ -123,7 +115,7 @@ class AntColony(object):
 
     def gen_path(self, start):
 
-        self.nodosRecorridosAnt = pd.DataFrame()    
+        self.nodosRecorridosAnt = pd.DataFrame()
         self.nodosVisitados.add(start)
 
         baseIlen = len(start.lstrip())
@@ -224,7 +216,7 @@ nodos = objManipulacion.dataAirport
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
-ant_colony = AntColony(vertices, nodos, 100, 0, 10, 0.8, alpha=1.5, beta=2, apre=1)
+ant_colony = AntColony(vertices, nodos, 60, 0, 10, 0.8, alpha=1, beta=3, apre=1)
 ant_colony.run()
 
 """

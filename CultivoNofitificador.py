@@ -69,18 +69,19 @@ class CultivoNotificador(InterNotificadora):
                 vueloEjecutados = vueloEjecutados.append(vueloEjecutado)
             else:
                 self.listaVuelosEjecutados.append(vueloEjecutados)
-                tuplaInfo = (self.vueloEjecutados, base, numeroEmparejamiento)
+                tuplaInfo = (vueloEjecutados, base, numeroEmparejamiento)
                 self.notificarObserver('ejecucion', tuplaInfo)
+                self.actualizarDatosCultivo(base, numeroEmparejamiento)
 
                 vueloIncidente= vueloData.iloc[i:len(vueloData.index) + 1]
                 tuplaIncidente = (vueloIncidente, fechaSalida, base, numeroEmparejamiento)
                 self.notificarObserver('incidente', tuplaIncidente)
-                break    
+                break
 
     def actualizarDatosCultivo(self, base, posicionEmparj):
         listaVuelosBase = self.cultivoTratar.get(base)
-        
-
+        listaVuelosBase = listaVuelosBase.pop(posicionEmparj)
+        self.cultivoTratar[base] = listaVuelosBase
 
     def initCultivo(self):
         cultivoTratado = self.tratarCultivo(self.cultivoTratar)
