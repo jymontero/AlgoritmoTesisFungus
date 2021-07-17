@@ -2,7 +2,6 @@ import random as rd
 from Restriccion import Restriccion
 import numpy as np
 import math
-
 class OperacionACOFungus():
 
     def __init__(self):
@@ -64,8 +63,3 @@ class OperacionACOFungus():
         horaSalida = saltoVuelo.iloc[0][' hour_arr']
         #saltoVuelo = saltoVuelo.drop(columns = ['sumAcumu', 'probabilidad'])
         return saltoVuelo, aeropuertoDestino, idVuelo, fechallegada, horaSalida
-
-"""obj = OperacionACOFungus()
-lista = obj.generar()
-lista.sort()
-obj.busquedaBinaria(lista, 0.11125289)"""

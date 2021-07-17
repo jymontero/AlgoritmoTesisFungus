@@ -1,4 +1,5 @@
 from datetime import datetime
+from CultivoNofitificador import CultivoNotificador
 class Cultivo():
 
     def __init__(self, tipoHojas):
@@ -15,6 +16,8 @@ class Cultivo():
 
         self.controlTasaCutlivo = self.inicilizarTasa(self.tipoHojas)
         self.controlTasaTipoHoja = self.inicilizarTasa(self.tipoHojas)
+
+        #self.objCultivoNotificador = CultivoNotificador()
 
     def setTipoHojas(self, tipoHojas):
         cultivoData = dict.fromkeys(tipoHojas)

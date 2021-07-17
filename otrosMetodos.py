@@ -155,10 +155,8 @@ def busquedaActualizarFeronoma(self, data, idVuelo, depositar):
     def tiempoEnServicio(self, tiempoVuelos, tiempoTransito):
         return self.objOperacionProblem.tiempoEnServicio(tiempoVuelos, tiempoTransito)
 
-    """
 
-    
-    """def tasaCrecimientoVuelosTipoHoja(self, lista):
+    def tasaCrecimientoVuelosTipoHoja(self, lista):
         cantidadVuelos = 0
         for i in range(len(lista)):
             tupla = lista[i]
@@ -166,9 +164,9 @@ def busquedaActualizarFeronoma(self, data, idVuelo, depositar):
             vuelos = len(dataVuelos.index)
             cantidadVuelos += vuelos
 
-        return cantidadVuelos"""
+        return cantidadVuelos
 
-    """def podarHojas(self, profundidadPoda):
+    def podarHojas(self, profundidadPoda):
         for tipoH in self.tipoHojas:
             dataPodar = self.dataCultivo.get(tipoH)
             for j in range(len(dataPodar)):
@@ -179,4 +177,97 @@ def busquedaActualizarFeronoma(self, data, idVuelo, depositar):
                     #dataPodada = dataPodar[:profundidadPoda]
                     self.dataCultivo[tipoH] = dataPodada
 
-        self.listaVuelosRetornar = self.limpiarDatos(self.dataCultivo)"""
+        self.listaVuelosRetornar = self.limpiarDatos(self.dataCultivo)
+
+    def printed(self, data):
+        const = len(data)
+        for data3 in data:
+            print(data3)
+
+    def uniqueColumn(self,nameColum,data):
+        data3 = pd.DataFrame()
+        data3 = data[nameColum]
+        return data3
+
+    #Metod que filtra todas las filas de un datafram
+    #nameColumn: nombre de la columna por el cual filtrar
+    #conditional: condicion de filtrado
+    def uniqueData(self,nameColum, conditional):
+        data3 = pd.DataFrame()
+        database = pd.DataFrame()
+
+        data3 = self.data_Frame[nameColum] == conditional
+        database = self.data_Frame[data3]
+        return database
+
+    #Metodo que filtra datos de acuerdo a una columna del dataframe
+    def distintData(self, columnNam):
+        self.dataAirport = pd.unique(self.data_Frame[columnNam])
+        aux = pd.DataFrame()
+
+        for base in self.dataAirport:
+            aux = self.uniqueData(columnNam,base)
+            self.listaBases.append(aux)
+
+    #Metodo que recorre un dataFrame
+    def recorrerDataFrame(self, dataF):
+            aux = pd.DataFrame()
+            for indiceF, fila in  aux.iterrows():
+                print(fila)
+
+    #Metodo que obtiene el tiempo de vuelo
+    def getTimeFly(self, row):
+        hora_dep = (row[' hour_dep '])
+        hora_arr = (row[' hour_arr'])
+        listHora_dep = hora_dep.lstrip().split(sep=':')
+        listHora_arr = hora_arr.lstrip().split(sep= ':')
+        minuto = self.horasObj.tiempoVuelo(listHora_arr,listHora_dep)
+        return minuto
+
+    def createColumn(self,nameColum):
+        self.data_Frame[nameColum] = self.data_Frame.apply(self.getPheromona,axis=1)
+
+    def getPheromona(self,row):
+        tiempo_vuelo = (row['time_fly'])
+        #return 1/ self.data_Frame.size
+        return 0.1
+
+
+    #Metodo que agrega una columna con el tiempo de vuelo
+    def addTimeFly(self):
+        self.data_Frame['time_fly']= self.data_Frame.apply(self.getTimeFly,axis=1)
+
+    #Metodo que crear un diccionario Clave:nombre de aeropuerto obase
+    #valor es el listado de todos los vuelos que parten  de aeropuerto o base
+    def crearDiccionario(self):
+        self.dictnary_Base_Aer = dict(zip(self.dataAirport,self.listaBases))
+
+    #Retorna el datafraeme
+    def getDataFrame(self):
+        return self.data_Frame
+
+    def getDataAirport(self):
+        return self.dataAirport
+
+    #retorna listadebases
+    def getListaBases(self):
+        return self.listaBases
+
+    def getBasesConexiones(self):
+        return self.dictnary_Base_Aer
+"""
+
+"""    def contadorBases(self, base):
+            if base == ' BASE1 ':
+                self.contadorB1 += 1
+            if base == ' BASE2 ':
+                self.contadorB2 += 1
+            if base == ' BASE3 ':
+                self.contadorB3 +=1
+"""
+#self.objHistorial.generarHistorial('\nBase Hormiga:'+ str(i), baseInicio)
+"""dataHistorial = path
+            dataHistorial = dataHistorial.drop(columns=['feromona', 'costo'])
+            self.objHistorial.generarHistorial('\nCamino Hormiga:'+ str(i)+ '\n', dataHistorial)"""
+
+            #self.objHistorial.generarHistorial('Cultivo',self.cultivoACO)

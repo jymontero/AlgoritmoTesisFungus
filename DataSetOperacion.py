@@ -1,6 +1,5 @@
 import pandas as pd
 from OperacionAcoFu import OperacionACOFungus
-
 class DataSetOperacion:
 
     def __init__(self):

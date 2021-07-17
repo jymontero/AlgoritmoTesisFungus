@@ -16,5 +16,4 @@ class RegistroEjecucion(InterObserver):
         time.sleep(10)
         print('Vuelos Ejecutados: \n', tuplaInfo[0])
 
-    def getVuelosEjecutados(self):
-        pass
+

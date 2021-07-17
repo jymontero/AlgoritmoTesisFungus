@@ -1,8 +1,6 @@
 import logging
 import pprint
 
-
-
 class Historial():
 
     def __init__(self):
@@ -25,18 +23,3 @@ class Historial():
 
     def generarHistorial(self, mensaje, data):
         logging.info(mensaje + str(data))
-
-
-"""LOG_FILENAME = 'logging_example.out'
-logging.basicConfig(
-    filename=LOG_FILENAME,
-    level=logging.DEBUG,
-)
-
-logging.debug('This message should go to the log file')
-
-with open(LOG_FILENAME, 'rt') as f:
-    body = f.read()
-
-print('FILE:')
-print(body)"""

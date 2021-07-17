@@ -1,8 +1,6 @@
 import pandas as pd
 from OperacionAcoFu import OperacionACOFungus
 from Historial import Historial
-
-
 class Probabilidad():
 
     def __init__(self, alpha, beta, historial):
@@ -15,7 +13,6 @@ class Probabilidad():
         self.listaAbsulta= []
         self.objHistorial = Historial()
         self.objHistorial =  historial
-
 
     def calcuFeroVisib(self, row):
         pheronoma = (row['feromona'])
@@ -32,6 +29,7 @@ class Probabilidad():
     def probabilidadNodos(self):
         suma = self.sumarFeroVisi()
         self.dataP['probabilidad'] = self.dataP['visibilidad'].apply(lambda x:(x/suma))
+
     def sumaAcumuladaProbabilidad(self):
         self.dataP['sumAcumu'] = self.dataP['probabilidad'].cumsum()
 
@@ -39,7 +37,7 @@ class Probabilidad():
         aleatorio = self.objOperacionFungus.generarAleatorio()
         #self.objHistorial.generarHistorial('\nAleatorio:', aleatorio)
         busquedaProb = self.objOperacionFungus.busquedaBinaria(self.listaAbsulta, aleatorio)
-        self.objHistorial.generarHistorial('Busqueda#PRobablidad:', busquedaProb)
+        #self.objHistorial.generarHistorial('Busqueda#PRobablidad:', busquedaProb)
         saltoVuelo, aeroDestino, idVuelo, fechaArr, horaDepa = self.objOperacionFungus.getSalto(busquedaProb, self.dataP)
         #self.objHistorial.generarHistorial('Proximo Nodo:\n', saltoVuelo)
         return saltoVuelo, aeroDestino, idVuelo, fechaArr, horaDepa
@@ -55,7 +53,7 @@ class Probabilidad():
         serie = self.dataP['sumAcumu']
         self.listaAbsulta = serie.tolist()
 
-        self.generarLog()
+        #self.generarLog()
 
 
     def generarLog(self):

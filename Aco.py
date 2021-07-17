@@ -64,7 +64,7 @@ class AntColony(object):
     def run(self):
         self.hojasCultivo = self.objCultivo.controlCultivoGlobal(self.vertices)
         print('\nVuelos Operar:', self.hojasCultivo)
-        self.objHistorial.parametrosInciales(self.n_iterations, self.n_ants, self.aprendizajeQ, self.alpha, self.beta)
+        #self.objHistorial.parametrosInciales(self.n_iterations, self.n_ants, self.aprendizajeQ, self.alpha, self.beta)
 
         all_paths = []
 
@@ -74,11 +74,9 @@ class AntColony(object):
                 self.vertices = self.objFeromona.evaporacionGlobalFeromona(self.nodos, self.vertices)
 
             self.cultivoACO = self.objCultivo.cultivar(all_paths)
-            #self.objHistorial.generarHistorial('Cultivo',self.cultivoACO)
             self.vertices = self.objFeromona.eliminarNodos(self.cultivoACO, self.vertices)
             self.inyectarFeromona()
             print('**************NODOS EN EL CULTIVO************')
-            #self.objCultivo.getCultivoClasificado()
             self.controlCultivo(self.vertices)
 
         cultivoCosechar = self.objCultivo.getCultivoClasificado()
@@ -89,22 +87,13 @@ class AntColony(object):
         objCultivoNotificador.registrarObserver(objRegistroEjecucion)
         objCultivoNotificador.initCultivo()
 
-
     def gen_all_paths(self):
         all_paths = []
 
         for i in range(self.n_ants):
             baseInicio = self.randomBase()
-            self.contadorBases(baseInicio)
-            self.objHistorial.generarHistorial('\nBase Hormiga:'+ str(i)  , baseInicio)
             path = self.gen_path(baseInicio)
-
-            """dataHistorial = path
-            dataHistorial = dataHistorial.drop(columns=['feromona', 'costo'])
-            self.objHistorial.generarHistorial('\nCamino Hormiga:'+ str(i)+ '\n', dataHistorial)"""
-
             path, evaluacion, estadoBase = self.objPenalizacion.evaluarRestriccion(path)
-            #self.dicHormigas[i] = path
             path = self.objFeromona.cantidadFeromonaDepositar(path)
 
             self.vertices = self.objFeromona.actualizarDataVertices(path, self.vertices)
@@ -118,7 +107,6 @@ class AntColony(object):
         self.nodosRecorridosAnt = pd.DataFrame()
         self.nodosVisitados.add(start)
 
-        baseIlen = len(start.lstrip())
         base = start
         prev = start
 
@@ -130,7 +118,6 @@ class AntColony(object):
         contador = 0
 
         while True:
-
             saltoVuelo, aeroDestino, idVuelo, fechaArr, horaDep = self.objProbabilidad.obtenerSiguienteNodo()
 
             while idVuelo in self.nodosVisitados:
@@ -143,7 +130,6 @@ class AntColony(object):
 
             if contador >= 12 and base == prev:
                 break
-
             if fechaArr >= ' 2000-02-01':
                 break
 
@@ -159,6 +145,7 @@ class AntColony(object):
 
                 if len(self.copiaNodosAdyacentes.index) == 0:
                     break
+
             self.objProbabilidad.evaluarProbabilidad(self.copiaNodosAdyacentes)
 
         self.nodosVisitados.clear()
@@ -184,10 +171,6 @@ class AntColony(object):
         self.nodosAdyacentes = self.nodosAdyacentes[self.nodosAdyacentes[' date_dep '] == fechaPosterior]
         self.nodosAdyacentes = self.nodosAdyacentes[self.nodosAdyacentes[' hour_dep '] <= hora]
 
-    def iterar(self, data):
-        for fila in data.iterrows():
-            print(fila)
-
     def inyectarFeromona(self):
         for nodo in self.nodos:
             data = self.vertices.get(nodo)
@@ -200,14 +183,6 @@ class AntColony(object):
         self.hojasCultivo = self.objCultivo.controlCultivoGlobal(self.vertices)
         print('Cantidad Vuelos Actual:', self.hojasCultivo)
 
-    def contadorBases(self, base):
-        if base == ' BASE1 ':
-            self.contadorB1 += 1
-        if base == ' BASE2 ':
-            self.contadorB2 += 1
-        if base == ' BASE3 ':
-            self.contadorB3 +=1
-
 objManipulacion = DataSetTransform()
 objManipulacion.init_transform()
 vertices = objManipulacion.dictnary_Base_Aer
@@ -216,7 +191,7 @@ nodos = objManipulacion.dataAirport
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
-ant_colony = AntColony(vertices, nodos, 60, 0, 10, 0.8, alpha=1, beta=3, apre=1)
+ant_colony = AntColony(vertices, nodos, 50, 0, 5, 0.8, alpha=1, beta=3, apre=1)
 ant_colony.run()
 
 """

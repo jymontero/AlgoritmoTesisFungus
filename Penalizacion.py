@@ -179,8 +179,7 @@ class Penalizacion():
 
     def evaluarRestriccion(self, data):
         self.dataR = data
-        self.dataR['penalVuelo'] = 0
-        self.dataR['penalDuty'] = 0
+
         self.dataR['penalizacion'] = 0
         self.dataR['estado'] = ''
 
