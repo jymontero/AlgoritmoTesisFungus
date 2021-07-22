@@ -30,7 +30,7 @@ class DataSetTransform:
         self.penalizacionVuelo('penalVuelo', 0)
         self.penalizacionDuty('penalDuty',0)
         self.estadoIncidente('incidente',0)
-        self.vueloAccidentado(2)
+        self.vueloAccidentado(3)
         self.objOperacion.distintData2(' airport_dep ', self.datos)
         self.objOperacion.crearDiccionario()
         self.dataAirport = self.objOperacion.getDataAirport()

@@ -3,6 +3,7 @@ from InterNotificadora import InterNotificadora
 from InterObserver import InterObserver
 import random
 import pandas as pd
+from EstructuraVuelo import EstructuraVuelo
 
 class CultivoNotificador(InterNotificadora):
 
@@ -52,7 +53,7 @@ class CultivoNotificador(InterNotificadora):
                 vueloEjecutados = vueloEjecutados.append(vueloEjecutado)
                 print(contador)
                 print(len(vueloData.index)-1)
-                if contador == len(vueloData.index) - 1:
+                if contador == len(vueloData.index):
                     self.listaVuelosEjecutados.append(vueloEjecutados)
                     tuplaInfo = (vueloEjecutados, base, numeroEmparejamiento)
                     self.notificarObserver('ejecucion', tuplaInfo)
@@ -70,22 +71,24 @@ class CultivoNotificador(InterNotificadora):
                 break
 
     def buscarEmparejamiento(self, tupla):
-        vuelosInfectados = tupla[0]
-        fechaSalida = tupla[1]
-        base = tupla[2]
-        numEmparejamiento = tupla[3] + 1
+        tuplaInfectada = tupla
+        vuelosInfectados = tuplaInfectada[0]
+        fechaSalida = tuplaInfectada[1]
+        base = tuplaInfectada[2]
+        numEmparejamiento = tuplaInfectada[3] + 1
 
         listaVuelosBase = self.cultivoTratar.get(base)
-        for data in listaVuelosBase:
-            posicion = data[3]
-            if posicion == numEmparejamiento:
-                #print(data)
-                print('')
+        if numEmparejamiento < len(listaVuelosBase):
+            for data in listaVuelosBase:
+                posicion = data[3]
+                if posicion == numEmparejamiento:
+                    self.estructuraVuelos(data, tuplaInfectada)
+        else:
+            print('No hay donde ubicar los emparejamientos')
 
-    def estruturarVuelos(self, tupla):
-        pass
-
-
+    def estructuraVuelos(self, tupla, tuplaInfect):
+        objEstructuraVueos = EstructuraVuelo()
+        objEstructuraVueos.estructurasVuelos(tupla, tuplaInfect)
 
     def actualizarDatosCultivo(self, base, posicionEmparj):
         listaVuelosBase = self.cultivoTratar.get(base)

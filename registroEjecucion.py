@@ -10,10 +10,11 @@ class RegistroEjecucion(InterObserver):
     def notify_changes(self, data):
         tuplaInfo = data
         print('\n**** EJECUTANDO EMPAREJAMIENTO ****\n')
-        print('Base De salida: ', tuplaInfo[1])
-        print('Emparejamiento: ', tuplaInfo[2])
+        #print('Base De salida: ', tuplaInfo[1])
+        #print('Emparejamiento: ', tuplaInfo[2])
         print('Vuelos en Ejecucion.....')
         time.sleep(10)
-        print('Vuelos Ejecutados: \n', tuplaInfo[0])
+       # print('Vuelos Ejecutados: \n', tuplaInfo[0])
+        print('Vuelos Ejecutados: \n')
 
 
