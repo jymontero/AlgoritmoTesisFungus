@@ -1,6 +1,7 @@
 
 from datetime import datetime, date, time, timezone, timedelta
 import pandas as pd
+import time
 
 class EstructuraVuelo():
 
@@ -49,7 +50,7 @@ class EstructuraVuelo():
         dateSelect = datetime.strptime(fecha1, FORMATO)
         dateSelect2 = datetime.strptime(fecha2, FORMATO)
 
-        if dateSelect > dateSelect2:
+        if dateSelect == dateSelect2:
             return True
         else:
             return False

@@ -7,7 +7,7 @@ class DataSet:
    def __init__(self):
       pd.set_option('display.max_rows', None)
       self.data_FrameP = pd.DataFrame()
-      self.datos50 = pd.DataFrame()
+      self.datosPorcentaje = pd.DataFrame()
 
 #Metodo que devuelve el dataSet
    def getDataFramePP(self):
@@ -31,12 +31,16 @@ class DataSet:
          self.data_FrameP = self.data_FrameP.reset_index(drop=True)
          print('Dataset cargado...')
 
-         self.cargaDataSet50(0.50)
+         #self.data_FrameP = self.cargaDatosPorcentaje(0.50)
          return self.data_FrameP
 
       except:
          return print("Ruta del dataSet no encontrada...")
 
-   def cargaDataSet50(self, porcentaje):
-      self.cargaDataSet50 = self.data_FrameP.sample(frac = porcentaje, replace=False)
-      self.cargaDataSet50 = self.cargaDataSet50.reset_index(drop=True)
+   def cargaDatosPorcentaje(self, porcentaje):
+      if porcentaje == 1:
+         return self.data_FrameP
+      else:
+         self.datosPorcentaje = self.data_FrameP.sample(frac = porcentaje, replace=False)
+         self.datosPorcentaje = self.datosPorcentaje.reset_index(drop=True)
+         return self.datosPorcentaje

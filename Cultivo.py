@@ -1,5 +1,5 @@
 from datetime import datetime
-from CultivoNofitificador import CultivoNotificador
+#from CultivoNofitificador import CultivoNotificador
 class Cultivo():
 
     def __init__(self, tipoHojas):
@@ -11,19 +11,30 @@ class Cultivo():
         self.controlTasaCutlivo = {}
         self.controlTasaTipoHoja = {}
 
-        self.dataCultivo = self.setTipoHojas(self.tipoHojas)
-        self.cultivoClasificado = self.setTipoHojas(self.tipoHojas)
+        self.dataCultivo = self.setTipoHojas(self.tipoHojas, 1)
+        self.cultivoClasificado = self.setTipoHojas(self.tipoHojas, 1)
+        self.datosGraficasBases = self.setTipoHojas(self.tipoHojas, 0)
 
         self.controlTasaCutlivo = self.inicilizarTasa(self.tipoHojas)
         self.controlTasaTipoHoja = self.inicilizarTasa(self.tipoHojas)
 
+        self.contadorEmparejamientos = 0
+        self.contadorVuelos = 0
+
         #self.objCultivoNotificador = CultivoNotificador()
 
-    def setTipoHojas(self, tipoHojas):
+    def getContadores(self):
+        return self.contadorEmparejamientos, self.contadorVuelos
+
+    def setTipoHojas(self, tipoHojas, modo):
         cultivoData = dict.fromkeys(tipoHojas)
         bases = cultivoData.keys()
-        for i in bases:
-            cultivoData[i] = []
+        if modo == 1:
+            for i in bases:
+                cultivoData[i] = []
+        else:
+            for i in bases:
+                cultivoData[i] = 0
         return cultivoData
 
     def inicilizarTasa(self, tipoHojas):
@@ -34,12 +45,18 @@ class Cultivo():
         return cultivoData
 
     def agregarHojasCultivoFungus(self):
-
+        self.contadorEmparejamientos = 0
+        self.contadorVuelos = 0
         for tipoH in self.tipoHojas:
             print('\nBase:', tipoH)
             hojaCultivar = self.dataCultivo.get(tipoH)
+            print(type(hojaCultivar))
             if len(hojaCultivar)!=0:
-                nodoMinimaEvaluacion = self.sacarMinimo(hojaCultivar)
+                contadorAuxVeulos = len(hojaCultivar)
+                self.contadorVuelos += contadorAuxVeulos
+                self.contadorEmparejamientos+=1
+                nodoMinimaEvaluacion, evaluacion = self.sacarMinimo(hojaCultivar)
+                self.datosGraficasBases[tipoH] = evaluacion
                 TuplaDatafecha = self.contruirTupla(nodoMinimaEvaluacion, tipoH)
                 hojaCultivada = self.cultivoClasificado.get(tipoH)
                 #hojaPreparada = (nodoMinimaEvaluacion,fechaInicioVuelo)
@@ -49,21 +66,21 @@ class Cultivo():
                 cultivadaOrdenada = sorted(hojaCultivada, key= self.sortByDate)
                 self.cultivoClasificado[tipoH] = cultivadaOrdenada
                 self.dataCultivo[tipoH] = []
-
-                """print('*******DATA ORDENADA INICIO******')
-                print(ordenada)
-                print('*******DATA ORDENADA FIN******')"""
                 tasaCrecimiento = self.crecimientoVuelosTipoHoja(tipoH, nodoMinimaEvaluacion,1)
                 print(tasaCrecimiento)
+            else:
+                self.datosGraficasBases[tipoH] = 0
 
     def sortByDate(self, elem):
         return datetime.strptime(elem[1], ' %Y-%m-%d ')
 
     def sacarMinimo(self, data):
-            minimo = min(data, key= lambda item:item[1])[0]
-            #print(minimo)
+            dataEmparajiento = min(data, key= lambda item:item[1])
+            tupla = dataEmparajiento
+            vuelo = tupla[0]
+            evaluacion = tupla[1]
             #tupla = self.obtenerFechaInicio(minimo)
-            return minimo
+            return vuelo, evaluacion
 
     def contruirTupla(self, data, tipoH):
             fechaSalida = data.iloc[0][' date_dep ']
@@ -180,7 +197,7 @@ class Cultivo():
     def cultivar(self, data):
         #print(data)
         self.clasificarHojas(data)
-        return self.listaVuelosRetornar
+        return self.listaVuelosRetornar, self.datosGraficasBases
 
     def armarTupla(self, data):
         dataLocal = data

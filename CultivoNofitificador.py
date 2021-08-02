@@ -3,6 +3,7 @@ from InterNotificadora import InterNotificadora
 from InterObserver import InterObserver
 import random
 import pandas as pd
+import time
 from EstructuraVuelo import EstructuraVuelo
 
 class CultivoNotificador(InterNotificadora):
@@ -25,7 +26,7 @@ class CultivoNotificador(InterNotificadora):
         self.listaOrdenada = sorted(self.listaOrdenada, key= self.sortByDate)
         print('TamanioListORdenda',len(self.listaOrdenada))
         print(self.listaOrdenada)
-        print('***********FIN LISTA ORDENADA *********')
+        print('***********FIN LISTA ORDENADA *********\n')
 
 
     def sortByDate(self, elem):
@@ -51,8 +52,8 @@ class CultivoNotificador(InterNotificadora):
                 contador+=1
                 vueloEjecutado = vueloData.iloc[i]
                 vueloEjecutados = vueloEjecutados.append(vueloEjecutado)
-                print(contador)
-                print(len(vueloData.index)-1)
+                #print(contador)
+                #print(len(vueloData.index)-1)
                 if contador == len(vueloData.index):
                     self.listaVuelosEjecutados.append(vueloEjecutados)
                     tuplaInfo = (vueloEjecutados, base, numeroEmparejamiento)
@@ -67,7 +68,12 @@ class CultivoNotificador(InterNotificadora):
                 vueloIncidente= vueloData.iloc[i:len(vueloData.index) + 1]
                 tuplaIncidente = (vueloIncidente, fechaSalida, base, numeroEmparejamiento)
                 self.notificarObserver('incidente', tuplaIncidente)
+                
+                InicioReparacion = time.time()
                 self.buscarEmparejamiento(tuplaIncidente)
+                FinReparacion = time.time()
+                tiempoRespuesta = FinReparacion - InicioReparacion
+                print('Tiempo Respuesta: ', tiempoRespuesta)
                 break
 
     def buscarEmparejamiento(self, tupla):
@@ -84,7 +90,7 @@ class CultivoNotificador(InterNotificadora):
                 if posicion == numEmparejamiento:
                     self.estructuraVuelos(data, tuplaInfectada)
         else:
-            print('No hay donde ubicar los emparejamientos')
+            print('No hay donde ubicar los emparejamientos\n')
 
     def estructuraVuelos(self, tupla, tuplaInfect):
         objEstructuraVueos = EstructuraVuelo()

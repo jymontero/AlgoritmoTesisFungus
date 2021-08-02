@@ -60,7 +60,7 @@ class Penalizacion():
             penalizacionActual  = self.dataR.loc[i+1]['penalVuelo']
             self.dataR.loc[i+1,'penalVuelo'] = penalizacionActual +  penalizacion
             #listaConexionPenal.append((fechaSalida,fechaLlegada,tiempoEspera,penalizacion))
-            listaConexionPenal.append((leg, tiempoEspera,penalizacion))
+            listaConexionPenal.append((leg, tiempoEspera, penalizacion))
         #return sumaPenalizacion
         return listaConexionPenal, tiempoConexiones
 

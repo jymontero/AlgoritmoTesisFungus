@@ -1,32 +1,45 @@
-import pylab as pl
+import matplotlib.pyplot as plt
 
 class Grafica():
 
     def __init__(self):
         pass
 
-    def subplotsGrafica(self):
-        fig = pl.figure()
-        fig.subplots_adjust(bottom=0.025, left=0.025, top = 0.975, right=0.975)
+    def dibujarGraficaLineasTipoI(self, datosEjeX, datosEjeY):
+        datos = datosEjeY
+        fig, ax = plt.subplots()
+        ax.plot(datosEjeX, datos[' BASE1 '], color= 'tab:blue', label= "Base 1", linewidth=2.5)
+        ax.plot(datosEjeX, datos[' BASE2 '], color = 'tab:purple', label = "Base 2", linewidth=2.5)
+        ax.plot(datosEjeX, datos[' BASE3 '], color = 'tab:green',  label= "Base 3", linewidth=2.5)
+        plt.legend(loc='upper right')
+        plt.show()
 
-        pl.subplot(2, 1, 1)
-        pl.xticks(()), pl.yticks(())
+    def dibujarGraficaLineasTipoII(self, datosEjeX, datosEjeY1, datosEjeY2):
+        fig, ax = plt.subplots()
+        ax.plot(datosEjeX, datosEjeY1, color= 'tab:blue', label= "Emparejamientos", linewidth=2.5)
+        ax.plot(datosEjeX, datosEjeY2, color = 'tab:green',  label= "Vuelos", linewidth=2.5)
+        plt.legend(loc='upper left')
+        plt.show()
 
-        pl.subplot(2, 3, 4)
-        pl.xticks(())
-        pl.yticks(())
+    def dibujarGraficaLineasTipoIII(self, datosEjeX, datosEjeY1, etiqueta):
+        fig, ax = plt.subplots()
+        ax.plot(datosEjeX, datosEjeY1, color= 'tab:blue', label= etiqueta, linewidth=2.5)
+        plt.legend(loc='upper left')
+        plt.show()
 
-        pl.subplot(2, 3, 5)
-        pl.xticks(())
-        pl.yticks(())
+    def dibujarGraficaBarraVertical(self, datosEjeX, datosEjeY):
+        fig, ax = plt.subplots()
+        ax.bar(datosEjeX, datosEjeY)
+        plt.show()
 
-        pl.subplot(2, 3, 6)
-        pl.xticks(())
-        pl.yticks(())
+    def dibujarGraficaPie(self, datosEjeX):
+        fig, ax = plt.subplots()
+        ax.pie(datosEjeX)
+        plt.show()
 
-
-
-        pl.show()
-    
-objGrafica = Grafica()
-objGrafica.subplotsGrafica()
+"""fig, ax = plt.subplots()
+dias = ['L', 'M', 'X', 'J', 'V', 'S', 'D']
+temperaturas = {'Madrid':[28.5, 30.5, 31, 30, 28, 27.5, 30.5], 'Barcelona':[24.5, 25.5, 26.5, 25, 26.5, 24.5, 25]}
+ax.plot(dias, temperaturas['Madrid'], color = 'tab:purple')
+ax.plot(dias, temperaturas['Barcelona'], color = 'tab:green')
+plt.show()"""

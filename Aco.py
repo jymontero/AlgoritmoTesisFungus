@@ -3,8 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random as random
 import pandas as pd
+import time
 
-from numpy.random import choice as np_choice
+#from numpy.random import choice as np_choice
 from math import sqrt
 from DataSetTransform import DataSetTransform
 from OperacionAcoFu import OperacionACOFungus
@@ -19,6 +20,7 @@ from InterNotificadora import InterNotificadora
 from CultivoNofitificador import CultivoNotificador
 from registroEjecucion import RegistroEjecucion
 from registroIncicente import RegistroIncidente
+from Graficas import Grafica
 class AntColony(object):
 
     def __init__(self, vertices, nodos, n_ants, n_best, n_iterations, decay, alpha=1, beta=1, apre=1):
@@ -37,16 +39,20 @@ class AntColony(object):
         self.hojasCultivo = 0
 
         self.dicHormigas = {}
+        self.dataEvaluacion = {}
         self.verticesCopy = {}
         self.cultivoACO = {}
         self.listaPenalizacion = []
         self.listaEvaluacion = []
         self.nodosBases = (' BASE1 ', ' BASE2 ', ' BASE3 ')
+        self.contadorVuelos = []
+        self.contadorEmparejamientos = []
 
         self.nodosAdyacentes = pd.DataFrame()
         self.copiaNodosAdyacentes = pd.DataFrame()
         self.nodosRecorridos = pd.DataFrame()
         self.dataHormigaNodos = pd.DataFrame()
+
         self.objHistorial = Historial()
         self.objOperacionFungus = OperacionACOFungus()
         self.objRestriccion = Restriccion()
@@ -54,6 +60,7 @@ class AntColony(object):
         self.objCultivo = Cultivo(self.nodosBases)
         self.objFeromona = Feromona(self.decay, self.aprendizajeQ, self.objHistorial)
         self.objProbabilidad = Probabilidad(self.alpha, self.beta, self.objHistorial)
+        self.objGraficas = Grafica()
 
         self.nodosVisitados = set()
 
@@ -62,18 +69,27 @@ class AntColony(object):
         self.contadorB3 = 0
 
     def run(self):
+        self.setTipoHojas(self.nodosBases)
         self.hojasCultivo = self.objCultivo.controlCultivoGlobal(self.vertices)
         print('\nVuelos Operar:', self.hojasCultivo)
-        #self.objHistorial.parametrosInciales(self.n_iterations, self.n_ants, self.aprendizajeQ, self.alpha, self.beta)
-
+        #self.objHistorial.parametrosInciales(self.n_iterations, self.n_ants, self.aprendizajeQ, self.alpha, self.bet
+        numeroIteraciones = 0
+        listaItera = []
         all_paths = []
-
-        while (self.hojasCultivo > 850):
+        dicDatos = {}
+        Inicio = time.time()
+        while (self.hojasCultivo > 0):
+            print('Iteracion: ', numeroIteraciones)
+            listaItera.append(numeroIteraciones)
             for i in range(self.n_iterations):
                 all_paths = self.gen_all_paths()
                 self.vertices = self.objFeromona.evaporacionGlobalFeromona(self.nodos, self.vertices)
 
-            self.cultivoACO = self.objCultivo.cultivar(all_paths)
+            numeroIteraciones+=1
+            self.cultivoACO, dicDatos  = self.objCultivo.cultivar(all_paths)
+            contadorEm, contadorVu = self.objCultivo.getContadores()
+            self.agregarDataTipoI(dicDatos)
+            self.agregarDataTipoII(contadorEm, contadorVu)
             self.vertices = self.objFeromona.eliminarNodos(self.cultivoACO, self.vertices)
             self.inyectarFeromona()
             print('**************NODOS EN EL CULTIVO************')
@@ -86,6 +102,15 @@ class AntColony(object):
         objCultivoNotificador.registrarObserver(objRegistroIncidente)
         objCultivoNotificador.registrarObserver(objRegistroEjecucion)
         objCultivoNotificador.initCultivo()
+
+        fin = time.time()
+        tiempoEjecucion = fin-Inicio
+        print('Tiempo de ejecución: ', tiempoEjecucion)
+        print('Data: ', self.hojasCultivo, ' Vuelos.')
+
+        self.objGraficas.dibujarGraficaLineasTipoI(listaItera, self.dataEvaluacion)
+        self.objGraficas.dibujarGraficaLineasTipoIII(listaItera, self.contadorEmparejamientos, 'Emparejamientos')
+        self.objGraficas.dibujarGraficaLineasTipoIII(listaItera, self.contadorVuelos, 'Vuelos')
 
     def gen_all_paths(self):
         all_paths = []
@@ -183,6 +208,25 @@ class AntColony(object):
         self.hojasCultivo = self.objCultivo.controlCultivoGlobal(self.vertices)
         print('Cantidad Vuelos Actual:', self.hojasCultivo)
 
+    def setTipoHojas(self, tipoHojas):
+        cultivoData = dict.fromkeys(tipoHojas)
+        bases = cultivoData.keys()
+        for i in bases:
+            self.dataEvaluacion[i] = []
+
+    def agregarDataTipoI(self, dataEntrante):
+        for i in self.nodosBases:
+            datosAnteriores = self.dataEvaluacion[i]
+            datoNuevo = int(dataEntrante[i])
+            print(type(datosAnteriores))
+            datosAnteriores.append(datoNuevo)
+            self.dataEvaluacion[i] = datosAnteriores
+
+    def agregarDataTipoII(self, data1, data2):
+        self.contadorEmparejamientos.append(data1)
+        self.contadorVuelos.append(data2)
+
+
 objManipulacion = DataSetTransform()
 objManipulacion.init_transform()
 vertices = objManipulacion.dictnary_Base_Aer
@@ -191,7 +235,7 @@ nodos = objManipulacion.dataAirport
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
-ant_colony = AntColony(vertices, nodos, 50, 0, 5, 0.8, alpha=1, beta=3, apre=1)
+ant_colony = AntColony(vertices, nodos, 50, 0, 5, 0.8, alpha=1.5, beta=1, apre=1)
 ant_colony.run()
 
 """
