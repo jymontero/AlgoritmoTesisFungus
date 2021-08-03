@@ -32,7 +32,7 @@ class DataSet:
          print('Dataset cargado...')
 
          #self.data_FrameP = self.cargaDatosPorcentaje(0.50)
-         return self.data_FrameP
+         #return self.data_FrameP
 
       except:
          return print("Ruta del dataSet no encontrada...")

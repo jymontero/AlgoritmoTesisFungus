@@ -68,7 +68,7 @@ class CultivoNotificador(InterNotificadora):
                 vueloIncidente= vueloData.iloc[i:len(vueloData.index) + 1]
                 tuplaIncidente = (vueloIncidente, fechaSalida, base, numeroEmparejamiento)
                 self.notificarObserver('incidente', tuplaIncidente)
-                
+
                 InicioReparacion = time.time()
                 self.buscarEmparejamiento(tuplaIncidente)
                 FinReparacion = time.time()

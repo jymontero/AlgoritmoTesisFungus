@@ -159,7 +159,12 @@ class AntColony(object):
                 break
 
             self.nodosAdyacentes = self.vertices.get(prev)
-            self.agruparFecha(fechaArr, horaDep)
+            if self.nodosAdyacentes is None:
+                print('None')
+                break
+            else:
+                #print('*****NODOS ADYACENTES ANTES DE AGRUPAR ****\n',self.nodosAdyacentes)
+                self.agruparFecha(fechaArr, horaDep)
 
             self.copiaNodosAdyacentes = self.nodosAdyacentes.copy()
 
@@ -186,6 +191,7 @@ class AntColony(object):
     def agruparFecha(self, fecha, hora):
         #mirar bien la logica se cambio a date_dep etsa ba en date_arr
         self.nodosAdyacentes = self.nodosAdyacentes[self.nodosAdyacentes[' date_dep '] == fecha]
+        #print('*****NODOS ADYACENTES AGRUPADOS ****',self.nodosAdyacentes)
         self.nodosAdyacentes = self.nodosAdyacentes[self.nodosAdyacentes[' hour_dep '] >= hora]
 
     def agrupar(self, fecha):

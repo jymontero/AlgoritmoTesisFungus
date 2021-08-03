@@ -18,7 +18,8 @@ class DataSetTransform:
         self.dictnary_Base_Aer = {}
 
     def setDatos(self):
-        self.datos = self.objDataSet.cargaDataset()
+        self.objDataSet.cargaDataset()
+        self.datos = self.objDataSet.cargaDatosPorcentaje(0.50)
 
     def getDatos(self):
         return self.datos
