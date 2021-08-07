@@ -22,13 +22,19 @@ class OperacionACOFungus():
 
     def generarAleatorio(self):
         #return (rd.uniform(0.001,1).__round__(6))
-        return rd.random()
+        aleatorio = round((rd.random()),6)
+        return aleatorio
 
     def busquedaBinaria(self, lista, numero):
+        #print('NumeroBuscar', numero)
+        #print('LIsta', lista)
+        #print('TamanioLista', len(lista))
         izq = 0
         der = len(lista) - 1
         mini = min(lista)
+        #print(mini)
         maxo = max(lista)
+        #print(maxo)
         aux = []
 
         if numero < lista[izq]:

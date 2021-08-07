@@ -41,12 +41,12 @@ class AntColony(object):
         self.dicHormigas = {}
         self.dataEvaluacion = {}
         self.verticesCopy = {}
-        self.cultivoACO = {}
+        self.cultivoACO = []
         self.listaPenalizacion = []
         self.listaEvaluacion = []
-        self.nodosBases = (' BASE1 ', ' BASE2 ', ' BASE3 ')
         self.contadorVuelos = []
         self.contadorEmparejamientos = []
+        self.nodosBases = (' BASE1 ', ' BASE2 ', ' BASE3 ')
 
         self.nodosAdyacentes = pd.DataFrame()
         self.copiaNodosAdyacentes = pd.DataFrame()
@@ -68,25 +68,103 @@ class AntColony(object):
         self.contadorB2 = 0
         self.contadorB3 = 0
 
+        #self.contadorIterLocalVuelo = 0
+        #self.contadorIterLocalEmpareja = 0
+        self.contadorIterGlobalVuelo = 0
+        self.contadorIterGlobalEmpareja = 0
+
     def run(self):
         self.setTipoHojas(self.nodosBases)
         self.hojasCultivo = self.objCultivo.controlCultivoGlobal(self.vertices)
         print('\nVuelos Operar:', self.hojasCultivo)
         #self.objHistorial.parametrosInciales(self.n_iterations, self.n_ants, self.aprendizajeQ, self.alpha, self.bet
-        numeroIteraciones = 0
+        iteracionParada = 0
+        numeroIteracionesGlobales = 0
         listaItera = []
-        all_paths = []
         dicDatos = {}
         Inicio = time.time()
+
+        all_paths = []
+        all_paths_general = []
+
+        ficheroLocal = open("dataGraficar/dataLocal.txt", 'w')
+        ficheroLocalGeneral = open("dataGraficar/dataLGeneral.txt", 'w')
+        ficheroEvaluacionLocal = open("dataGraficar/dataEvaluacionLocal.txt", 'w')
+        ficheroGlobal = open("dataGraficar/dataGlobal.txt", 'w')
+        ficheroEvaluacionGlobal = open("dataGraficar/dataEvaluacionGlobal.txt", 'w')
+        ficheroTiempoEjecucionLocal = open("dataGraficar/dataEjecucionLocal.txt", 'w')
+        ficheroTiempoEjecucionGlobal = open("dataGraficar/dataEjecucionGlobal.txt", 'w')
+        ficheroCrecimientoCultivo = open("dataGraficar/dataCrecimientoCultivo.txt", 'w')
+
+
         while (self.hojasCultivo > 0):
-            print('Iteracion: ', numeroIteraciones)
-            listaItera.append(numeroIteraciones)
+            print('Iteracion: ', numeroIteracionesGlobales)
+            listaItera.append(numeroIteracionesGlobales)
+            InicioGlobal = time.time()
+
             for i in range(self.n_iterations):
+                InicioLocal = time.time()
+                itera = i
                 all_paths = self.gen_all_paths()
+                finLocal = time.time()
+                tiempoEjecucionLocal = round((finLocal-InicioLocal),2)
+
+                ficheroTiempoEjecucionLocal.write(str(itera))
+                ficheroTiempoEjecucionLocal.write(',')
+                ficheroTiempoEjecucionLocal.write(str(tiempoEjecucionLocal)+"\n")
+
+                empareja, vuelos = self.estadisticaIteracionesLocales(all_paths)
+                ficheroLocal.write(str(itera))
+                ficheroLocal.write(',')
+                ficheroLocal.write(str(empareja))
+                ficheroLocal.write(',')
+                ficheroLocal.write(str(vuelos)+"\n")
+
+                evaluacion = self.estadisticasEvaluaciones(all_paths)
+                ficheroEvaluacionLocal.write(str(itera))
+                ficheroEvaluacionLocal.write(',')
+                ficheroEvaluacionLocal.write(str(evaluacion)+"\n")
+
+
                 self.vertices = self.objFeromona.evaporacionGlobalFeromona(self.nodos, self.vertices)
 
-            numeroIteraciones+=1
+            finGlobal = time.time()
+            tiempoEjecucionGlobal = round((finGlobal- InicioGlobal), 1)
+
+            ficheroTiempoEjecucionGlobal.write(str(numeroIteracionesGlobales))
+            ficheroTiempoEjecucionGlobal.write(',')
+            ficheroTiempoEjecucionGlobal.write(str(tiempoEjecucionGlobal)+"\n")
+
+            print(all_paths)
+
+            empareja2, vuelos2 = self.estadisticaIteracionesLocales(all_paths)
+            ficheroLocalGeneral.write(str(numeroIteracionesGlobales))
+            ficheroLocalGeneral.write(',')
+            ficheroLocalGeneral.write(str(empareja2))
+            ficheroLocalGeneral.write(',')
+            ficheroLocalGeneral.write(str(vuelos2)+"\n")
+
+
+            evaluacionGobal = self.estadisticasEvaluaciones(all_paths)
+            ficheroEvaluacionGlobal.write(str(numeroIteracionesGlobales))
+            ficheroEvaluacionGlobal.write(',')
+            ficheroEvaluacionGlobal.write(str(evaluacionGobal)+"\n")
+
             self.cultivoACO, dicDatos  = self.objCultivo.cultivar(all_paths)
+
+            if len(self.cultivoACO) == 0:
+                iteracionParada+=1
+
+            print('Nodos Cultivo',self.cultivoACO)
+
+            emparejamientosCultivo, vuelosCultivo = self.estadisticaCultivo(self.cultivoACO)
+            ficheroCrecimientoCultivo.write(str(numeroIteracionesGlobales))
+            ficheroCrecimientoCultivo.write(',')
+            ficheroCrecimientoCultivo.write(str(emparejamientosCultivo))
+            ficheroCrecimientoCultivo.write(str(vuelosCultivo)+"\n")
+
+
+
             contadorEm, contadorVu = self.objCultivo.getContadores()
             self.agregarDataTipoI(dicDatos)
             self.agregarDataTipoII(contadorEm, contadorVu)
@@ -94,6 +172,20 @@ class AntColony(object):
             self.inyectarFeromona()
             print('**************NODOS EN EL CULTIVO************')
             self.controlCultivo(self.vertices)
+
+            numeroIteracionesGlobales+=1
+
+            if iteracionParada == 20:
+                break
+
+        ficheroLocal.close()
+        ficheroLocalGeneral.close()
+        ficheroEvaluacionLocal.close()
+        ficheroGlobal.close()
+        ficheroEvaluacionGlobal.close()
+        ficheroTiempoEjecucionLocal.close()
+        ficheroTiempoEjecucionGlobal.close()
+        ficheroCrecimientoCultivo.close()
 
         cultivoCosechar = self.objCultivo.getCultivoClasificado()
         objCultivoNotificador =  CultivoNotificador(cultivoCosechar)
@@ -105,6 +197,7 @@ class AntColony(object):
 
         fin = time.time()
         tiempoEjecucion = fin-Inicio
+        print('Vuelos sin cubrir:', self.controlCultivo(self.vertices))
         print('Tiempo de ejecución: ', tiempoEjecucion)
         print('Data: ', self.hojasCultivo, ' Vuelos.')
 
@@ -117,7 +210,10 @@ class AntColony(object):
 
         for i in range(self.n_ants):
             baseInicio = self.randomBase()
+
             path = self.gen_path(baseInicio)
+            #print(path)
+
             path, evaluacion, estadoBase = self.objPenalizacion.evaluarRestriccion(path)
             path = self.objFeromona.cantidadFeromonaDepositar(path)
 
@@ -140,7 +236,7 @@ class AntColony(object):
         #self.agrupar(fecha)
         self.copiaNodosAdyacentes = self.nodosAdyacentes.copy()
         self.objProbabilidad.evaluarProbabilidad(self.copiaNodosAdyacentes)
-        contador = 0
+        contadorVuelos = 0
 
         while True:
             saltoVuelo, aeroDestino, idVuelo, fechaArr, horaDep = self.objProbabilidad.obtenerSiguienteNodo()
@@ -149,18 +245,24 @@ class AntColony(object):
                 saltoVuelo, aeroDestino, idVuelo, fechaArr, horaDep = self.objProbabilidad.obtenerSiguienteNodo()
 
             self.nodosVisitados.add(idVuelo)
-            contador+=1
+
+            contadorVuelos+=1
             prev = aeroDestino
             self.nodosRecorridosAnt  = self.nodosRecorridosAnt.append(saltoVuelo)
 
-            if contador >= 12 and base == prev:
-                break
-            if fechaArr >= ' 2000-02-01':
+            if contadorVuelos >= 12 and base == prev:
+                #print('Llego a base y numero de vuelos')
                 break
 
+            if fechaArr >= ' 2000-02-01':
+                #print('fecha mayor a enero')
+                break
+
+
             self.nodosAdyacentes = self.vertices.get(prev)
+            #print("NODOS ADYACENTES***\n", self.nodosAdyacentes)
             if self.nodosAdyacentes is None:
-                print('None')
+                print('***********None**********')
                 break
             else:
                 #print('*****NODOS ADYACENTES ANTES DE AGRUPAR ****\n',self.nodosAdyacentes)
@@ -172,8 +274,9 @@ class AntColony(object):
                 self.nodosAdyacentes = self.vertices.get(prev)
                 self.agruparSinFecha(fechaArr, horaDep)
                 self.copiaNodosAdyacentes = self.nodosAdyacentes.copy()
-
+    #sque el if un nivel mas
                 if len(self.copiaNodosAdyacentes.index) == 0:
+                    #print('Sin vuelos programadoss')
                     break
 
             self.objProbabilidad.evaluarProbabilidad(self.copiaNodosAdyacentes)
@@ -191,8 +294,12 @@ class AntColony(object):
     def agruparFecha(self, fecha, hora):
         #mirar bien la logica se cambio a date_dep etsa ba en date_arr
         self.nodosAdyacentes = self.nodosAdyacentes[self.nodosAdyacentes[' date_dep '] == fecha]
-        #print('*****NODOS ADYACENTES AGRUPADOS ****',self.nodosAdyacentes)
+
         self.nodosAdyacentes = self.nodosAdyacentes[self.nodosAdyacentes[' hour_dep '] >= hora]
+        if len(self.nodosAdyacentes.index) == 1:
+            self.nodosAdyacentes = self.nodosAdyacentes.reset_index(drop=True)
+            self.nodosAdyacentes.loc[0,'noPenalizable'] = 1
+        #print('*****NODOS ADYACENTES AGRUPADOS ****',self.nodosAdyacentes)
 
     def agrupar(self, fecha):
         self.nodosAdyacentes = self.nodosAdyacentes[self.nodosAdyacentes[' date_dep '] <= fecha]
@@ -224,13 +331,51 @@ class AntColony(object):
         for i in self.nodosBases:
             datosAnteriores = self.dataEvaluacion[i]
             datoNuevo = int(dataEntrante[i])
-            print(type(datosAnteriores))
+#            print(type(datosAnteriores))
             datosAnteriores.append(datoNuevo)
             self.dataEvaluacion[i] = datosAnteriores
 
     def agregarDataTipoII(self, data1, data2):
         self.contadorEmparejamientos.append(data1)
         self.contadorVuelos.append(data2)
+
+    def estadisticaIteracionesLocales(self, lista):
+        listaDistintos = []
+        contadorIterLocalEmpareja2 = 0
+        contadorIterLocalVuelo2 = 0
+
+        for i in range(len(lista)):
+            tupla = lista[i]
+            dataFrame = tupla[1]
+            evaluacion = tupla[2]
+            listaDistintos.append(evaluacion)
+            aux  = len(dataFrame.index)
+            contadorIterLocalVuelo2 += aux
+
+        listaDistintos = list(set(listaDistintos))
+        contadorIterLocalEmpareja2 = len(listaDistintos)
+        return contadorIterLocalEmpareja2, contadorIterLocalVuelo2
+
+    def estadisticasEvaluaciones(self, data):
+        listaEvaluacion = []
+        for i in range(len(data)):
+            tupla = data[i]
+            dataFrame = tupla[1]
+            evaluacion = tupla[2]
+            listaEvaluacion.append(evaluacion)
+
+        listaEvaluacion = list(set(listaEvaluacion))
+        menorEvaluacion = min(listaEvaluacion)
+        return menorEvaluacion
+
+    def estadisticaCultivo(self, data):
+        numEmparejamientos = len(data)
+        numVuelos = 0
+        for i in range(len(data)):
+            emparejamiento = data[i]
+            vuelos = len(emparejamiento.index)
+            numVuelos += vuelos
+        return numEmparejamientos, numVuelos
 
 
 objManipulacion = DataSetTransform()
@@ -241,7 +386,7 @@ nodos = objManipulacion.dataAirport
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
-ant_colony = AntColony(vertices, nodos, 50, 0, 5, 0.8, alpha=1.5, beta=1, apre=1)
+ant_colony = AntColony(vertices, nodos, 50, 0, 10, 0.1, alpha=1, beta=1 , apre=0.95)
 ant_colony.run()
 
 """

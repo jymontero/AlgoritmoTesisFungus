@@ -138,7 +138,7 @@ class Restriccion:
         if tiempoVueloServicio <= self.DUTY_TIEMPO_MAXIMO:
             return 0
         else:
-            return (tiempoVueloServicio - self.DUTY_TIEMPO_MAXIMO)*10
+            return (tiempoVueloServicio - self.DUTY_TIEMPO_MAXIMO)*100
 
 
 #Tiempo de un emparejamiento de la tripulación:
@@ -169,4 +169,4 @@ class Restriccion:
         if dias < self.DIAS_HOLGURA:
             return 0
         else:
-            return dias * 100
+            return dias * 10

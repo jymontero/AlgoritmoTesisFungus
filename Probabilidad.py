@@ -24,7 +24,8 @@ class Probabilidad():
         self.dataP['visibilidad'] = self.dataP.apply(self.calcuFeroVisib, axis=1)
 
     def sumarFeroVisi(self):
-        return self.dataP['visibilidad'].sum()
+        sumaTotal = (self.dataP['visibilidad'].sum())
+        return sumaTotal
 
     def probabilidadNodos(self):
         suma = self.sumarFeroVisi()
@@ -35,9 +36,9 @@ class Probabilidad():
 
     def obtenerSiguienteNodo(self):
         aleatorio = self.objOperacionFungus.generarAleatorio()
-        #self.objHistorial.generarHistorial('\nAleatorio:', aleatorio)
+        self.objHistorial.generarHistorial('\nAleatorio:', aleatorio)
         busquedaProb = self.objOperacionFungus.busquedaBinaria(self.listaAbsulta, aleatorio)
-        #self.objHistorial.generarHistorial('Busqueda#PRobablidad:', busquedaProb)
+        self.objHistorial.generarHistorial('Busqueda#PRobablidad:', busquedaProb)
         saltoVuelo, aeroDestino, idVuelo, fechaArr, horaDepa = self.objOperacionFungus.getSalto(busquedaProb, self.dataP)
         #self.objHistorial.generarHistorial('Proximo Nodo:\n', saltoVuelo)
         return saltoVuelo, aeroDestino, idVuelo, fechaArr, horaDepa

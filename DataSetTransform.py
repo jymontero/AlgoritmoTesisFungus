@@ -28,10 +28,11 @@ class DataSetTransform:
         self.setDatos()
         self.feromonaInicial('feromona')
         self.visibilidadPeso('costo')
+        self.vueloNopenalizable('noPenalizable', 0)
         self.penalizacionVuelo('penalVuelo', 0)
         self.penalizacionDuty('penalDuty',0)
         self.estadoIncidente('incidente',0)
-        self.vueloAccidentado(3)
+        self.vueloAccidentado(2)
         self.objOperacion.distintData2(' airport_dep ', self.datos)
         self.objOperacion.crearDiccionario()
         self.dataAirport = self.objOperacion.getDataAirport()
@@ -51,6 +52,9 @@ class DataSetTransform:
         self.datos = self.objOperacion.createColumn(nombreCol, valor)
 
     def estadoIncidente(self, nombreCol, valor):
+        self.datos = self.objOperacion.createColumn(nombreCol, valor)
+
+    def vueloNopenalizable(self, nombreCol, valor):
         self.datos = self.objOperacion.createColumn(nombreCol, valor)
 
     def vueloAccidentado(self, porcentaje):

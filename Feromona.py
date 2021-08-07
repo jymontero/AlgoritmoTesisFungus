@@ -37,7 +37,8 @@ class Feromona():
             feronomaActual = self.dataF.loc[i]['feromona']
 
             #cantHeuristica = costo - penalizacion
-            cantHeuristica = costo + penalizacion
+            cantHeuristica = int(costo + penalizacion)
+            #print('Cantidad', cantHeuristica)
             #self.objHistorial.generarHistorial('\ncantidadHeuristica: ', cantHeuristica)
             cantFeromonaADespositar = self.aprendizajeQ / (cantHeuristica)
             #self.objHistorial.generarHistorial('cantidadFeromona: ',cantFeromonaADespositar)
@@ -78,7 +79,7 @@ class Feromona():
                 dCopia = dCopia.reset_index(drop=True)
                 vuelosEliminados +=1
                 self.dictAeroFeromona[nodoSalida] =  dCopia
-        print('VuelosEliinados: ', vuelosEliminados)
+        print('VuelosEliminados: ', vuelosEliminados)
         return self.dictAeroFeromona
 
     def evaluarFeromona(self, data):

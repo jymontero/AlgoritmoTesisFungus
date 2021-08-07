@@ -50,12 +50,13 @@ class Cultivo():
         for tipoH in self.tipoHojas:
             print('\nBase:', tipoH)
             hojaCultivar = self.dataCultivo.get(tipoH)
-            print(type(hojaCultivar))
+            #print(type(hojaCultivar))
             if len(hojaCultivar)!=0:
                 contadorAuxVeulos = len(hojaCultivar)
                 self.contadorVuelos += contadorAuxVeulos
                 self.contadorEmparejamientos+=1
                 nodoMinimaEvaluacion, evaluacion = self.sacarMinimo(hojaCultivar)
+                self.listaVuelosRetornar.append(nodoMinimaEvaluacion)
                 self.datosGraficasBases[tipoH] = evaluacion
                 TuplaDatafecha = self.contruirTupla(nodoMinimaEvaluacion, tipoH)
                 hojaCultivada = self.cultivoClasificado.get(tipoH)
@@ -147,6 +148,7 @@ class Cultivo():
 
 #params data:lista de tuplas
     def clasificarHojas(self, data):
+        self.listaVuelosRetornar = []
         for i in range(len(data)):
             infoTupla = data[i]
             dataVuelos = infoTupla[1]
@@ -155,14 +157,13 @@ class Cultivo():
             estadoBase = infoTupla[4]
             self.clasificacionTipoHoja(base, infoTupla, estadoBase, dataVuelos, penal)
 
-        #self.ordenarHojas()
-        #self.podarHojas(5)
-        self.listaVuelosRetornar = self.limpiarDatos(self.dataCultivo)
+        #self.listaVuelosRetornar = self.limpiarDatos(self.dataCultivo)
+        print(self.dataCultivo)
         self.agregarHojasCultivoFungus()
 
     def clasificacionTipoHoja(self, tipoHoja, hojaTupla, estadoBase, dataVuelos, penal):
         lista = self.dataCultivo.get(tipoHoja)
-        numeroVuelosPermitidos = self.tamanioHojas(dataVuelos, 15)
+        numeroVuelosPermitidos = self.tamanioHojas(dataVuelos, 16)
         if estadoBase == True and numeroVuelosPermitidos == 0:
             lista.append((dataVuelos,penal))
             self.dataCultivo[tipoHoja] = lista
