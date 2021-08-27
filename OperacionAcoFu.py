@@ -8,7 +8,7 @@ class OperacionACOFungus():
         self.objRestriccion = Restriccion()
 
     def inyeccionFeromona(self, row):
-        return 0.01
+        return 0.001
 
     def inyeccionVisibilidad(self, row):
         hora_dep = (row[' hour_dep '])

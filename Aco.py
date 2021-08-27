@@ -5,6 +5,7 @@ import random as random
 import pandas as pd
 import time
 
+
 #from numpy.random import choice as np_choice
 from math import sqrt
 from DataSetTransform import DataSetTransform
@@ -73,6 +74,8 @@ class AntColony(object):
         self.contadorIterGlobalVuelo = 0
         self.contadorIterGlobalEmpareja = 0
 
+        self.ficheroEvaluacionGlobal = open("dataGraficar/dataEvaluacionGlobal.txt", 'w')
+
     def run(self):
         self.setTipoHojas(self.nodosBases)
         self.hojasCultivo = self.objCultivo.controlCultivoGlobal(self.vertices)
@@ -91,7 +94,7 @@ class AntColony(object):
         ficheroLocalGeneral = open("dataGraficar/dataLGeneral.txt", 'w')
         ficheroEvaluacionLocal = open("dataGraficar/dataEvaluacionLocal.txt", 'w')
         ficheroGlobal = open("dataGraficar/dataGlobal.txt", 'w')
-        ficheroEvaluacionGlobal = open("dataGraficar/dataEvaluacionGlobal.txt", 'w')
+
         ficheroTiempoEjecucionLocal = open("dataGraficar/dataEjecucionLocal.txt", 'w')
         ficheroTiempoEjecucionGlobal = open("dataGraficar/dataEjecucionGlobal.txt", 'w')
         ficheroCrecimientoCultivo = open("dataGraficar/dataCrecimientoCultivo.txt", 'w')
@@ -129,7 +132,7 @@ class AntColony(object):
                 self.vertices = self.objFeromona.evaporacionGlobalFeromona(self.nodos, self.vertices)
 
             finGlobal = time.time()
-            tiempoEjecucionGlobal = round((finGlobal- InicioGlobal), 1)
+            tiempoEjecucionGlobal = round((finGlobal- InicioGlobal), 2)
 
             ficheroTiempoEjecucionGlobal.write(str(numeroIteracionesGlobales))
             ficheroTiempoEjecucionGlobal.write(',')
@@ -145,29 +148,38 @@ class AntColony(object):
             ficheroLocalGeneral.write(str(vuelos2)+"\n")
 
 
-            evaluacionGobal = self.estadisticasEvaluaciones(all_paths)
+            """evaluacionGobal = self.estadisticasEvaluaciones(all_paths)
             ficheroEvaluacionGlobal.write(str(numeroIteracionesGlobales))
             ficheroEvaluacionGlobal.write(',')
-            ficheroEvaluacionGlobal.write(str(evaluacionGobal)+"\n")
+            ficheroEvaluacionGlobal.write(str(evaluacionGobal)+"\n")"""
 
+            #devuelve los vuelos a cultivar, y la mejor evaluacon por base
             self.cultivoACO, dicDatos  = self.objCultivo.cultivar(all_paths)
 
             if len(self.cultivoACO) == 0:
                 iteracionParada+=1
+            else:
+                iteracionParada = 0
 
-            print('Nodos Cultivo',self.cultivoACO)
+            print('*****Nodos Cultivo***\n',self.cultivoACO)
 
+            #lo que cumple con restricciones
             emparejamientosCultivo, vuelosCultivo = self.estadisticaCultivo(self.cultivoACO)
             ficheroCrecimientoCultivo.write(str(numeroIteracionesGlobales))
             ficheroCrecimientoCultivo.write(',')
             ficheroCrecimientoCultivo.write(str(emparejamientosCultivo))
+            ficheroCrecimientoCultivo.write(',')
             ficheroCrecimientoCultivo.write(str(vuelosCultivo)+"\n")
 
 
 
             contadorEm, contadorVu = self.objCultivo.getContadores()
-            self.agregarDataTipoI(dicDatos)
+            #
+            # evaluacion de lo mejor en el cultivo
+            self.agregarDataTipoI(dicDatos, numeroIteracionesGlobales)
+            #emparejami,vuelo que vieene del cultov
             self.agregarDataTipoII(contadorEm, contadorVu)
+
             self.vertices = self.objFeromona.eliminarNodos(self.cultivoACO, self.vertices)
             self.inyectarFeromona()
             print('**************NODOS EN EL CULTIVO************')
@@ -182,12 +194,12 @@ class AntColony(object):
         ficheroLocalGeneral.close()
         ficheroEvaluacionLocal.close()
         ficheroGlobal.close()
-        ficheroEvaluacionGlobal.close()
+        self.ficheroEvaluacionGlobal.close()
         ficheroTiempoEjecucionLocal.close()
         ficheroTiempoEjecucionGlobal.close()
         ficheroCrecimientoCultivo.close()
 
-        cultivoCosechar = self.objCultivo.getCultivoClasificado()
+        cultivoCosechar, empareja = self.objCultivo.getCultivoClasificado()
         objCultivoNotificador =  CultivoNotificador(cultivoCosechar)
         objRegistroIncidente  = RegistroIncidente('incidente')
         objRegistroEjecucion = RegistroEjecucion('ejecucion')
@@ -196,12 +208,13 @@ class AntColony(object):
         objCultivoNotificador.initCultivo()
 
         fin = time.time()
-        tiempoEjecucion = fin-Inicio
+        tiempoEjecucion = round((fin-Inicio),2)
         print('Vuelos sin cubrir:', self.controlCultivo(self.vertices))
         print('Tiempo de ejecución: ', tiempoEjecucion)
         print('Data: ', self.hojasCultivo, ' Vuelos.')
+        print('Emparejamientos: ', empareja)
 
-        self.objGraficas.dibujarGraficaLineasTipoI(listaItera, self.dataEvaluacion)
+        #self.objGraficas.dibujarGraficaLineasTipoI(listaItera, self.dataEvaluacion)
         self.objGraficas.dibujarGraficaLineasTipoIII(listaItera, self.contadorEmparejamientos, 'Emparejamientos')
         self.objGraficas.dibujarGraficaLineasTipoIII(listaItera, self.contadorVuelos, 'Vuelos')
 
@@ -327,13 +340,20 @@ class AntColony(object):
         for i in bases:
             self.dataEvaluacion[i] = []
 
-    def agregarDataTipoI(self, dataEntrante):
-        for i in self.nodosBases:
+    def agregarDataTipoI(self, dataEntrante, iterglobal):
+        valoresEvaluacion = dataEntrante.values()
+        self.ficheroEvaluacionGlobal.write(str(iterglobal))
+        for valor in valoresEvaluacion:
+            self.ficheroEvaluacionGlobal.write(',')
+            self.ficheroEvaluacionGlobal.write(str(int(valor)))
+        self.ficheroEvaluacionGlobal.write(str("\n"))
+        """for i in self.nodosBases:
             datosAnteriores = self.dataEvaluacion[i]
             datoNuevo = int(dataEntrante[i])
 #            print(type(datosAnteriores))
             datosAnteriores.append(datoNuevo)
-            self.dataEvaluacion[i] = datosAnteriores
+            self.dataEvaluacion[i] = datosAnteriores"""
+
 
     def agregarDataTipoII(self, data1, data2):
         self.contadorEmparejamientos.append(data1)
@@ -386,7 +406,7 @@ nodos = objManipulacion.dataAirport
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
-ant_colony = AntColony(vertices, nodos, 50, 0, 10, 0.1, alpha=1, beta=1 , apre=0.95)
+ant_colony = AntColony(vertices, nodos, 100, 0, 20 , 0.05, alpha=2, beta=1 , apre=0.8)
 ant_colony.run()
 
 """

@@ -19,7 +19,7 @@ class DataSetTransform:
 
     def setDatos(self):
         self.objDataSet.cargaDataset()
-        self.datos = self.objDataSet.cargaDatosPorcentaje(0.50)
+        self.datos = self.objDataSet.cargaDatosPorcentaje(1)
 
     def getDatos(self):
         return self.datos

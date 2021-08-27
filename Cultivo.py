@@ -58,6 +58,7 @@ class Cultivo():
                 nodoMinimaEvaluacion, evaluacion = self.sacarMinimo(hojaCultivar)
                 self.listaVuelosRetornar.append(nodoMinimaEvaluacion)
                 self.datosGraficasBases[tipoH] = evaluacion
+                print("Evaluacion: ", evaluacion)
                 TuplaDatafecha = self.contruirTupla(nodoMinimaEvaluacion, tipoH)
                 hojaCultivada = self.cultivoClasificado.get(tipoH)
                 #hojaPreparada = (nodoMinimaEvaluacion,fechaInicioVuelo)
@@ -215,10 +216,12 @@ class Cultivo():
         return lista
 
     def getCultivoClasificado(self):
-
+        numeroEmparejamientos = 0
         for tipoH in self.tipoHojas:
             dataValues = self.cultivoClasificado.get(tipoH)
+            aux = len(dataValues)
+            numeroEmparejamientos += aux
             listaNueva = self.armarTupla(dataValues)
             self.cultivoClasificado[tipoH] = listaNueva
 
-        return self.cultivoClasificado
+        return self.cultivoClasificado, numeroEmparejamientos
