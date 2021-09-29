@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-RUTA_DATASET = 'dataset/'
+RUTA_DATASET = 'dataPruebaS3/'
 class DataSet:
 
    def __init__(self):

@@ -1,14 +1,17 @@
 import random as rd
 from Restriccion import Restriccion
+from Historial import Historial
 import numpy as np
 import math
 class OperacionACOFungus():
 
     def __init__(self):
         self.objRestriccion = Restriccion()
+        self.objHistorial = Historial()
+
 
     def inyeccionFeromona(self, row):
-        return 0.001
+        return 0.01
 
     def inyeccionVisibilidad(self, row):
         hora_dep = (row[' hour_dep '])
@@ -22,7 +25,8 @@ class OperacionACOFungus():
 
     def generarAleatorio(self):
         #return (rd.uniform(0.001,1).__round__(6))
-        aleatorio = round((rd.random()),6)
+        #aleatorio = round((rd.random()),5)
+        aleatorio = rd.uniform(0.0, 0.9999)
         return aleatorio
 
     def busquedaBinaria(self, lista, numero):
@@ -60,8 +64,12 @@ class OperacionACOFungus():
         return max(aux)
 
     def getSalto (self, probab, data):
+        #self.objHistorial.generarHistorial('ProbabiliadaLista:', probab)
         data2 = data
         saltoVuelo = data2[data2.sumAcumu == probab]
+        saltoVuelo = saltoVuelo.reset_index(drop=True)
+        #self.objHistorial.generarHistorial('SaltoNodo \n', saltoVuelo)
+        #print(saltoVuelo)
         aeropuertoDestino = saltoVuelo.iloc[0][' airport_arr ']
         idVuelo = saltoVuelo.iloc[0]['#leg_nb ']
         fechallegada = saltoVuelo.iloc[0][' date_arr ']

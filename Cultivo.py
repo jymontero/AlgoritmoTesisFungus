@@ -58,7 +58,7 @@ class Cultivo():
                 nodoMinimaEvaluacion, evaluacion = self.sacarMinimo(hojaCultivar)
                 self.listaVuelosRetornar.append(nodoMinimaEvaluacion)
                 self.datosGraficasBases[tipoH] = evaluacion
-                print("Evaluacion: ", evaluacion)
+                #print("Evaluacion: ", evaluacion)
                 TuplaDatafecha = self.contruirTupla(nodoMinimaEvaluacion, tipoH)
                 hojaCultivada = self.cultivoClasificado.get(tipoH)
                 #hojaPreparada = (nodoMinimaEvaluacion,fechaInicioVuelo)
@@ -69,7 +69,7 @@ class Cultivo():
                 self.cultivoClasificado[tipoH] = cultivadaOrdenada
                 self.dataCultivo[tipoH] = []
                 tasaCrecimiento = self.crecimientoVuelosTipoHoja(tipoH, nodoMinimaEvaluacion,1)
-                print(tasaCrecimiento)
+                #print(tasaCrecimiento)
             else:
                 self.datosGraficasBases[tipoH] = 0
 
@@ -159,7 +159,7 @@ class Cultivo():
             self.clasificacionTipoHoja(base, infoTupla, estadoBase, dataVuelos, penal)
 
         #self.listaVuelosRetornar = self.limpiarDatos(self.dataCultivo)
-        print(self.dataCultivo)
+        #print(self.dataCultivo)
         self.agregarHojasCultivoFungus()
 
     def clasificacionTipoHoja(self, tipoHoja, hojaTupla, estadoBase, dataVuelos, penal):

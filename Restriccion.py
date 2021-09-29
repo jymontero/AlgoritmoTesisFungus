@@ -97,7 +97,7 @@ class Restriccion:
 
 #Connection time: Periodo de tiempo entre dos tramos de
 # vuelo consecutivos, generalmente las aerolíneas
-# consideran un tiempo mínimo de 30 minutos y un máximo de 3 horas
+# consideran un tiempo mínimo de 30 minutos y un máximo de 3 horas a 3 horas y medio 210
 
     def tiempoConexion(self, tiempo, dias):
         penalConexionDias = ((dias * 24)*60)
@@ -107,7 +107,8 @@ class Restriccion:
         if tiempo < self.TIEMPO_CONEXION_MIN:
             return self.TIEMPO_CONEXION_MIN - tiempo
 
-        else:
+        #else:
+        if tiempo > self.TIEMPO_CONEXION_MAX:
             #SE CAMBIO EL VALOR PARA LA PENAZALIZACION SE MULTIPLICA X10
             return ((tiempo + penalConexionDias) - self.TIEMPO_CONEXION_MAX) * 10
 
@@ -120,7 +121,8 @@ class Restriccion:
         if numeroVuelos <= self.DUTY_VUELOS_MAXIMO:
             return 0
         else:
-            return numeroVuelos - self.DUTY_VUELOS_MAXIMO
+            #se cambio actulizacion 27/08/21 se aumento un *10 para probar comportamiento
+            return (numeroVuelos - self.DUTY_VUELOS_MAXIMO)
 
 #Tiempo de servicio: Tiempo total  desde que la tripulación
 # entra en servicio (Brief), usualmente una hora antes de
@@ -138,7 +140,8 @@ class Restriccion:
         if tiempoVueloServicio <= self.DUTY_TIEMPO_MAXIMO:
             return 0
         else:
-            return (tiempoVueloServicio - self.DUTY_TIEMPO_MAXIMO)*100
+            #se le cambio a 10 estaba en 100 27/08/21
+            return (tiempoVueloServicio - self.DUTY_TIEMPO_MAXIMO)*10
 
 
 #Tiempo de un emparejamiento de la tripulación:
@@ -153,7 +156,8 @@ class Restriccion:
 
     def dutiesMaximo(self, duties):
         if duties > self.DUTY_MAX:
-            return  duties - self.DUTY_MAX
+            # se cambio actuliazion 29/08/21 se aument *10 para probar
+            return  (duties - self.DUTY_MAX)
         else:
             return 0
 

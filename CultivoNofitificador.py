@@ -24,10 +24,19 @@ class CultivoNotificador(InterNotificadora):
             self.listaOrdenada = self.listaOrdenada + listaAux
 
         self.listaOrdenada = sorted(self.listaOrdenada, key= self.sortByDate)
+        self.escribirArhcivo(self.listaOrdenada)
         print('TamanioListORdenda',len(self.listaOrdenada))
         print(self.listaOrdenada)
         print('***********FIN LISTA ORDENADA *********\n')
 
+    def escribirArhcivo(self, listaO):
+        ficheroEmparejamientos = open("dataGraficar/emparejamientosCultivo.txt", 'w')
+        for data in listaO:
+            dataImpr = data[0]
+            dataImpr = dataImpr.drop(columns=['feromona','costo','noPenalizable','incidente'])
+            ficheroEmparejamientos.write(str(dataImpr))
+            ficheroEmparejamientos.write('\n')
+        ficheroEmparejamientos.close()
 
     def sortByDate(self, elem):
         return datetime.strptime(elem[1],' %Y-%m-%d ')

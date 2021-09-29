@@ -1,6 +1,5 @@
 import random as rn
 import numpy as np
-import matplotlib.pyplot as plt
 import random as random
 import pandas as pd
 import time
@@ -21,17 +20,16 @@ from InterNotificadora import InterNotificadora
 from CultivoNofitificador import CultivoNotificador
 from registroEjecucion import RegistroEjecucion
 from registroIncicente import RegistroIncidente
-from Graficas import Grafica
+
 class AntColony(object):
 
-    def __init__(self, vertices, nodos, n_ants, n_best, n_iterations, decay, alpha=1, beta=1, apre=1):
+    def __init__(self, vertices, nodos, n_ants, n_iterations, decay, alpha, beta, apre):
 
         pd.set_option('display.max_columns', None)
 
         self.vertices = vertices
         self.nodos = nodos
         self.n_ants = n_ants
-        self.n_best = n_best
         self.n_iterations = n_iterations
         self.decay = decay
         self.alpha = alpha
@@ -61,13 +59,8 @@ class AntColony(object):
         self.objCultivo = Cultivo(self.nodosBases)
         self.objFeromona = Feromona(self.decay, self.aprendizajeQ, self.objHistorial)
         self.objProbabilidad = Probabilidad(self.alpha, self.beta, self.objHistorial)
-        self.objGraficas = Grafica()
 
         self.nodosVisitados = set()
-
-        self.contadorB1 = 0
-        self.contadorB2 = 0
-        self.contadorB3 = 0
 
         #self.contadorIterLocalVuelo = 0
         #self.contadorIterLocalEmpareja = 0
@@ -100,7 +93,7 @@ class AntColony(object):
         ficheroCrecimientoCultivo = open("dataGraficar/dataCrecimientoCultivo.txt", 'w')
 
 
-        while (self.hojasCultivo > 0):
+        while (self.hojasCultivo > 600):
             print('Iteracion: ', numeroIteracionesGlobales)
             listaItera.append(numeroIteracionesGlobales)
             InicioGlobal = time.time()
@@ -138,7 +131,7 @@ class AntColony(object):
             ficheroTiempoEjecucionGlobal.write(',')
             ficheroTiempoEjecucionGlobal.write(str(tiempoEjecucionGlobal)+"\n")
 
-            print(all_paths)
+            #print(all_paths)
 
             empareja2, vuelos2 = self.estadisticaIteracionesLocales(all_paths)
             ficheroLocalGeneral.write(str(numeroIteracionesGlobales))
@@ -161,7 +154,7 @@ class AntColony(object):
             else:
                 iteracionParada = 0
 
-            print('*****Nodos Cultivo***\n',self.cultivoACO)
+            print('*********NODOS EN EL CULTIVO CULTIVO*******\n',self.cultivoACO)
 
             #lo que cumple con restricciones
             emparejamientosCultivo, vuelosCultivo = self.estadisticaCultivo(self.cultivoACO)
@@ -182,7 +175,7 @@ class AntColony(object):
 
             self.vertices = self.objFeromona.eliminarNodos(self.cultivoACO, self.vertices)
             self.inyectarFeromona()
-            print('**************NODOS EN EL CULTIVO************')
+            #print('**************NODOS EN EL CULTIVO************')
             self.controlCultivo(self.vertices)
 
             numeroIteracionesGlobales+=1
@@ -215,8 +208,8 @@ class AntColony(object):
         print('Emparejamientos: ', empareja)
 
         #self.objGraficas.dibujarGraficaLineasTipoI(listaItera, self.dataEvaluacion)
-        self.objGraficas.dibujarGraficaLineasTipoIII(listaItera, self.contadorEmparejamientos, 'Emparejamientos')
-        self.objGraficas.dibujarGraficaLineasTipoIII(listaItera, self.contadorVuelos, 'Vuelos')
+        #self.objGraficas.dibujarGraficaLineasTipoIII(listaItera, self.contadorEmparejamientos, 'Emparejamientos')
+        #self.objGraficas.dibujarGraficaLineasTipoIII(listaItera, self.contadorVuelos, 'Vuelos')
 
     def gen_all_paths(self):
         all_paths = []
@@ -263,16 +256,19 @@ class AntColony(object):
             prev = aeroDestino
             self.nodosRecorridosAnt  = self.nodosRecorridosAnt.append(saltoVuelo)
 
-            if contadorVuelos >= 12 and base == prev:
+            #if contadorVuelos >= 12 and base == prev:
+            if base == prev:
                 #print('Llego a base y numero de vuelos')
                 break
 
-            if fechaArr >= ' 2000-02-01':
+            #if fechaArr >= ' 2000-02-01':
+            if fechaArr >= ' 2000-01-22':
                 #print('fecha mayor a enero')
                 break
 
 
             self.nodosAdyacentes = self.vertices.get(prev)
+
             #print("NODOS ADYACENTES***\n", self.nodosAdyacentes)
             if self.nodosAdyacentes is None:
                 print('***********None**********')
@@ -280,6 +276,7 @@ class AntColony(object):
             else:
                 #print('*****NODOS ADYACENTES ANTES DE AGRUPAR ****\n',self.nodosAdyacentes)
                 self.agruparFecha(fechaArr, horaDep)
+                #self.objHistorial.generarHistorial('NodosAdyacentes\n', self.nodosAdyacentes)
 
             self.copiaNodosAdyacentes = self.nodosAdyacentes.copy()
 
@@ -403,10 +400,11 @@ objManipulacion.init_transform()
 vertices = objManipulacion.dictnary_Base_Aer
 nodos = objManipulacion.dataAirport
 
+
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
-ant_colony = AntColony(vertices, nodos, 100, 0, 20 , 0.05, alpha=2, beta=1 , apre=0.8)
+ant_colony = AntColony(vertices, nodos, 150, 5, 0.01, alpha=2, beta=1, apre=1)
 ant_colony.run()
 
 """

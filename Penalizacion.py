@@ -33,6 +33,7 @@ class Penalizacion():
         listaConexionPenal = []
         sumaPenalizacion = 0
         tiempoConexiones = 0
+        penalizacion = 0
 
         for i in range(size - 1):
             horaLLegadaVueloActual =  self.dataR.loc[i][' hour_arr']
@@ -61,6 +62,9 @@ class Penalizacion():
             self.dataR.loc[i+1,'penalVuelo'] = penalizacionActual +  penalizacion
             #listaConexionPenal.append((fechaSalida,fechaLlegada,tiempoEspera,penalizacion))
             listaConexionPenal.append((leg, tiempoEspera, penalizacion))
+            penalizacion = 0
+            penalizacionActual = 0
+
         #return sumaPenalizacion
         return listaConexionPenal, tiempoConexiones
 
@@ -111,12 +115,13 @@ class Penalizacion():
             for i in range(len(self.dataR)):
                 acumulado = self.dataR.loc[i]['penalDuty']
                 self.dataR.loc[i,'penalDuty'] = penalizacion + acumulado
-                acumulado = 0 
+                acumulado = 0
 
     def tiempoVueloServicio(self):
         listaTiempoDuty = []
         serieConcurrencia = self.concurrenciaFecha()
         nombre = serieConcurrencia.index
+        penalizacion = 0
 
         for i in range(len(nombre)):
             fecha = nombre[i]
@@ -136,6 +141,7 @@ class Penalizacion():
             penalizacion = self.objRestriccion.tiempoVueloServicio(tiempoServicioDuty)
             self.setPenalizacion(fecha, penalizacion)
             listaTiempoDuty.append((fecha, tiempoServicioDuty, penalizacion))
+            penalizacion = 0
 
         return listaTiempoDuty
 

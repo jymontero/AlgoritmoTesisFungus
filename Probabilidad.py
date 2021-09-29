@@ -16,7 +16,8 @@ class Probabilidad():
 
     def calcuFeroVisib(self, row):
         pheronoma = (row['feromona'])
-        visibilidad = 1.0 / (row['costo'])
+        #se le ambio de 1.0 a 1 13/09/21
+        visibilidad = 1 / (row['costo'])
         rowInfo = (pheronoma ** self.alpha) * (visibilidad ** self.beta)
         return rowInfo
 
@@ -36,9 +37,10 @@ class Probabilidad():
 
     def obtenerSiguienteNodo(self):
         aleatorio = self.objOperacionFungus.generarAleatorio()
-        self.objHistorial.generarHistorial('\nAleatorio:', aleatorio)
+        #self.objHistorial.generarHistorial('\nAleatorio:', aleatorio)
+        #self.objHistorial.generarHistorial('ListaBusqueda:', self.listaAbsulta)
         busquedaProb = self.objOperacionFungus.busquedaBinaria(self.listaAbsulta, aleatorio)
-        self.objHistorial.generarHistorial('Busqueda#PRobablidad:', busquedaProb)
+        #self.objHistorial.generarHistorial('Busqueda#PRobablidad:', busquedaProb)
         saltoVuelo, aeroDestino, idVuelo, fechaArr, horaDepa = self.objOperacionFungus.getSalto(busquedaProb, self.dataP)
         #self.objHistorial.generarHistorial('Proximo Nodo:\n', saltoVuelo)
         return saltoVuelo, aeroDestino, idVuelo, fechaArr, horaDepa
